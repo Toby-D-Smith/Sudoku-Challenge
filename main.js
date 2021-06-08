@@ -35,10 +35,7 @@ function testUniquness(sudokuLine, index) {
   }
   console.log(`Succeed on ${index + 1}`, sudokuLine);
 }
-function testSudoku() {
-  sudokuRowTest(sudoku1);
-  sudokuCollumnTest(sudoku1);
-}
+
 function sudokuBoxTest(sudoku) {
   let boxNumber = 0;
   for (let boxRow = 0; boxRow < 8; boxRow += 3) {
@@ -57,4 +54,8 @@ function createBox(sudoku, rowLimit, collumnLimit, boxNumber) {
   }
   testUniquness(currentBox, boxNumber);
 }
-sudokuBoxTest(sudoku1);
+function testSudoku() {
+  sudokuRowTest(sudoku1);
+  sudokuCollumnTest(sudoku1);
+  sudokuBoxTest(sudoku1);
+}
