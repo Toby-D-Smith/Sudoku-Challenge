@@ -97,12 +97,18 @@ function getSudoku() {
     const cellsArray = Array.from(rowNodeList.childNodes);
     const sudokuRow = [];
     cellsArray.forEach((cell) =>
-      parseInt(sudokuRow.push(cell.firstChild.value ? cell.firstChild.value : 0))
+      sudokuRow.push(parseInt(cell.firstChild.value ? cell.firstChild.value : 0))
     );
     currentSudoku.push(sudokuRow);
   });
   console.log(currentSudoku);
+  return currentSudoku;
 }
 
-// const testingButton = document.createElement("button");
-// document.body.appendChild
+const testingButton = document.createElement("button");
+document.body.appendChild(testingButton);
+testingButton.classList.add("testingButton");
+testingButton.innerText = "Test my Sudoku";
+testingButton.addEventListener("click", function () {
+  testSudoku(getSudoku());
+});

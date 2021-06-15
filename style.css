@@ -1,3 +1,8 @@
+body {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
 table {
   margin: 1em auto;
 }
@@ -23,4 +28,10 @@ tr:first-child {
 }
 tr:nth-child(3n) td {
   border-bottom: solid;
+}
+.testingButton {
+  width: 150px;
+  height: 60px;
+  text-align: center;
+  font-size: 18px;
 }
