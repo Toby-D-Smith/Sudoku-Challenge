@@ -1,5 +1,19 @@
 generateSudokuGrid();
 
+const emptySudoku = [[], [], [], [], [], [], [], [], []];
+
+const sudoku1 = [
+  [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  [4, 5, 6, 7, 8, 9, 1, 2, 3],
+  [7, 8, 9, 1, 2, 3, 4, 5, 6],
+  [2, 3, 4, 5, 6, 7, 8, 9, 1],
+  [5, 6, 7, 8, 9, 1, 2, 3, 4],
+  [8, 9, 1, 2, 3, 4, 5, 6, 7],
+  [3, 4, 5, 6, 7, 8, 9, 1, 2],
+  [6, 7, 8, 9, 1, 2, 3, 4, 5],
+  [9, 1, 2, 3, 4, 5, 6, 7, 8],
+];
+
 function generateSudokuGrid() {
   const sudokuGrid = document.createElement("table");
   sudokuGrid.setAttribute("id", "grid");
@@ -74,22 +88,8 @@ function testSudoku(sudoku) {
   sudokuBoxTest(sudoku);
 }
 
-const sudoku1 = [
-  [1, 2, 3, 4, 5, 6, 7, 8, 9],
-  [4, 5, 6, 7, 8, 9, 1, 2, 3],
-  [7, 8, 9, 1, 2, 3, 4, 5, 6],
-  [2, 3, 4, 5, 6, 7, 8, 9, 1],
-  [5, 6, 7, 8, 9, 1, 2, 3, 4],
-  [8, 9, 1, 2, 3, 4, 5, 6, 7],
-  [3, 4, 5, 6, 7, 8, 9, 1, 2],
-  [6, 7, 8, 9, 1, 2, 3, 4, 5],
-  [9, 1, 2, 3, 4, 5, 6, 7, 8],
-];
-
 testSudoku(sudoku1);
-// let cellNodeList = document.querySelectorAll(".cell");
-// console.log(cellNodeList);
-// cellNodeList.forEach((cell) => (cell.firstChild.value = "5"));
+//
 function getSudoku() {
   let currentSudoku = [];
   let ListofRows = document.querySelectorAll(".row");
@@ -104,6 +104,15 @@ function getSudoku() {
   console.log(currentSudoku);
   return currentSudoku;
 }
+function exampleSudoku(sudoku) {
+  let ListofRows = document.querySelectorAll(".row");
+  for (let i = 0; i < 9; i++) {
+    currentSudokuRow = Array.from(ListofRows[i].childNodes);
+    currentSudokuRow.forEach(
+      (cell, index) => (cell.firstChild.value = sudoku[i][index] ? sudoku[i][index] : "")
+    );
+  }
+}
 
 const testingButton = document.createElement("button");
 document.body.appendChild(testingButton);
@@ -111,4 +120,20 @@ testingButton.classList.add("testingButton");
 testingButton.innerText = "Test my Sudoku";
 testingButton.addEventListener("click", function () {
   testSudoku(getSudoku());
+});
+
+const exampleButton = document.createElement("button");
+document.body.appendChild(exampleButton);
+exampleButton.classList.add("exampleButton");
+exampleButton.innerText = "Sudoku Example";
+exampleButton.addEventListener("click", function () {
+  exampleSudoku(sudoku1);
+});
+
+const clearButton = document.createElement("button");
+document.body.appendChild(clearButton);
+clearButton.classList.add("clearButton");
+clearButton.innerText = "Clear";
+clearButton.addEventListener("click", function () {
+  exampleSudoku(emptySudoku);
 });

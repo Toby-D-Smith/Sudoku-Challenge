@@ -29,7 +29,7 @@ tr:first-child {
 tr:nth-child(3n) td {
   border-bottom: solid;
 }
-.testingButton {
+button {
   width: 150px;
   height: 60px;
   text-align: center;
