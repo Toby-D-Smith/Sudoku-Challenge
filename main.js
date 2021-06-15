@@ -113,9 +113,10 @@ function exampleSudoku(sudoku) {
     );
   }
 }
+const buttonSection = document.getElementById("button-section");
 
 const testingButton = document.createElement("button");
-document.body.appendChild(testingButton);
+buttonSection.appendChild(testingButton);
 testingButton.classList.add("testingButton");
 testingButton.innerText = "Test my Sudoku";
 testingButton.addEventListener("click", function () {
@@ -123,7 +124,7 @@ testingButton.addEventListener("click", function () {
 });
 
 const exampleButton = document.createElement("button");
-document.body.appendChild(exampleButton);
+buttonSection.appendChild(exampleButton);
 exampleButton.classList.add("exampleButton");
 exampleButton.innerText = "Sudoku Example";
 exampleButton.addEventListener("click", function () {
@@ -131,7 +132,7 @@ exampleButton.addEventListener("click", function () {
 });
 
 const clearButton = document.createElement("button");
-document.body.appendChild(clearButton);
+buttonSection.appendChild(clearButton);
 clearButton.classList.add("clearButton");
 clearButton.innerText = "Clear";
 clearButton.addEventListener("click", function () {

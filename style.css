@@ -34,4 +34,10 @@ button {
   height: 60px;
   text-align: center;
   font-size: 18px;
+  margin: 10px;
+  padding: 5px;
+}
+#button-section {
+  display: flex;
+  order: 2;
 }
