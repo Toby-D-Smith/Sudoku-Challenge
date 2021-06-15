@@ -1,17 +1,5 @@
 generateSudokuGrid();
 
-const sudoku1 = [
-  [1, 2, 3, 4, 5, 6, 7, 8, 9],
-  [4, 5, 6, 7, 8, 9, 1, 2, 3],
-  [7, 8, 9, 1, 2, 3, 4, 5, 6],
-  [2, 3, 4, 5, 6, 7, 8, 9, 1],
-  [5, 6, 7, 8, 9, 1, 2, 3, 4],
-  [8, 9, 1, 2, 3, 4, 5, 6, 7],
-  [3, 4, 5, 6, 7, 8, 9, 1, 2],
-  [6, 7, 7, 9, 1, 2, 3, 4, 5],
-  [9, 1, 2, 3, 4, 5, 6, 7, 8],
-];
-
 function generateSudokuGrid() {
   const sudokuGrid = document.createElement("table");
   sudokuGrid.setAttribute("id", "grid");
@@ -27,11 +15,23 @@ function generateSudokuGrid() {
       newRow.appendChild(newCell);
 
       let cellInput = document.createElement("input");
+      cellInput.classList.add("cellInput");
       cellInput.type = "text";
       cellInput.maxLength = "1";
       newCell.appendChild(cellInput);
     }
   }
+}
+function testUniquness(sudokuLine, index, type) {
+  let sortedLine = sudokuLine.map((a) => a);
+  sortedLine = sortedLine.sort();
+  for (let i = 0; i < 9; i++) {
+    if (sortedLine[i] !== i + 1) {
+      console.log(`Failed on ${type} ${index + 1}`, sudokuLine);
+      return;
+    }
+  }
+  // console.log(`Succeed on ${type} ${index + 1}`);
 }
 
 function sudokuRowTest(sudoku) {
@@ -46,18 +46,6 @@ function sudokuCollumnTest(sudoku) {
     }
     testUniquness(currentCollumn, collumnIndex, "Collumn");
   }
-}
-
-function testUniquness(sudokuLine, index, type) {
-  let sortedLine = sudokuLine.map((a) => a);
-  sortedLine = sortedLine.sort();
-  for (let i = 0; i < 9; i++) {
-    if (sortedLine[i] !== i + 1) {
-      console.log(`Failed on ${type} ${index + 1}`, sudokuLine);
-      return;
-    }
-  }
-  // console.log(`Succeed on ${type} ${index + 1}`);
 }
 
 function sudokuBoxTest(sudoku) {
@@ -79,9 +67,42 @@ function createBox(sudoku, rowLimit, collumnLimit) {
   }
   return currentBox;
 }
-function testSudoku() {
-  sudokuRowTest(sudoku1);
-  sudokuCollumnTest(sudoku1);
-  sudokuBoxTest(sudoku1);
+
+function testSudoku(sudoku) {
+  sudokuRowTest(sudoku);
+  sudokuCollumnTest(sudoku);
+  sudokuBoxTest(sudoku);
 }
-testSudoku();
+
+const sudoku1 = [
+  [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  [4, 5, 6, 7, 8, 9, 1, 2, 3],
+  [7, 8, 9, 1, 2, 3, 4, 5, 6],
+  [2, 3, 4, 5, 6, 7, 8, 9, 1],
+  [5, 6, 7, 8, 9, 1, 2, 3, 4],
+  [8, 9, 1, 2, 3, 4, 5, 6, 7],
+  [3, 4, 5, 6, 7, 8, 9, 1, 2],
+  [6, 7, 8, 9, 1, 2, 3, 4, 5],
+  [9, 1, 2, 3, 4, 5, 6, 7, 8],
+];
+
+testSudoku(sudoku1);
+// let cellNodeList = document.querySelectorAll(".cell");
+// console.log(cellNodeList);
+// cellNodeList.forEach((cell) => (cell.firstChild.value = "5"));
+function getSudoku() {
+  let currentSudoku = [];
+  let ListofRows = document.querySelectorAll(".row");
+  ListofRows.forEach((rowNodeList) => {
+    const cellsArray = Array.from(rowNodeList.childNodes);
+    const sudokuRow = [];
+    cellsArray.forEach((cell) =>
+      parseInt(sudokuRow.push(cell.firstChild.value ? cell.firstChild.value : 0))
+    );
+    currentSudoku.push(sudokuRow);
+  });
+  console.log(currentSudoku);
+}
+
+// const testingButton = document.createElement("button");
+// document.body.appendChild
