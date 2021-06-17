@@ -36,61 +36,43 @@ function generateSudokuGrid() {
     }
   }
 }
-function testUniquness(sudokuLine, index, type) {
-  if (sudokuLine.length != 9) {
-    return false;
-  }
-  let sortedLine = sudokuLine.map((a) => a);
-  sortedLine = sortedLine.sort();
-  for (let i = 0; i < 9; i++) {
-    if (sortedLine[i] !== i + 1) {
-      console.log(`Failed on ${type} ${index + 1}`, sudokuLine);
-      return false;
-    }
-  }
-  return true;
-  // console.log(`Succeed on ${type} ${index + 1}`);
-}
-
-function sudokuRowTest(sudoku) {
-  let result = true;
-  sudoku.forEach((row, index) => {
-    let trueOrFalse = testUniquness(row, index, "Row");
-    if (!trueOrFalse) {
-      result = false;
-    }
-  });
-  return result;
-}
-
-function sudokuCollumnTest(sudoku) {
-  let result = true;
-  for (let collumnIndex = 0; collumnIndex < 9; collumnIndex++) {
-    const currentCollumn = [];
-    for (let rowIndex = 0; rowIndex < 9; rowIndex++) {
-      currentCollumn.push(sudoku[rowIndex][collumnIndex]);
-    }
-    let trueOrFalse = testUniquness(currentCollumn, collumnIndex, "Collumn");
-    if (!trueOrFalse) {
-      result = false;
-    }
-  }
-  return result;
-}
-
-function sudokuBoxTest(sudoku) {
-  let result = true;
-  let boxNumber = 0;
-  for (let boxRow = 0; boxRow < 8; boxRow += 3) {
-    for (let boxCollumn = 0; boxCollumn < 8; boxCollumn += 3) {
-      const currentBox = createBox(sudoku, [boxRow, boxRow + 2], [boxCollumn, boxCollumn + 2]);
-      let trueOrFalse = testUniquness(currentBox, boxNumber++, "Box");
-      if (!trueOrFalse) {
-        result = false;
+function testSudoku(sudoku) {
+  let incorrectCells = [];
+  for (let rowIndex = 0; rowIndex < 9; rowIndex++) {
+    for (let collumnIndex = 0; collumnIndex < 9; collumnIndex++) {
+      currentCell = sudoku[rowIndex][collumnIndex];
+      let isCellCorrect = checkCellWorks(sudoku, rowIndex, collumnIndex, currentCell);
+      if (!isCellCorrect) {
+        incorrectCells.push([rowIndex, collumnIndex]);
       }
     }
   }
-  return result;
+  showWinorLose(incorrectCells);
+  if (incorrectCells.length === 0) {
+    console.log("Correct!");
+    return "Correct!";
+  } else {
+    console.log(incorrectCells);
+    return incorrectCells;
+  }
+}
+function showWinorLose(incorrectCellsArray) {
+  if (incorrectCellsArray.length === 0) {
+    document.body.style.backgroundColor = "green";
+  } else {
+    let rowNodeList = document.querySelectorAll(".row");
+    // console.log(rowNodeList);
+    // console.log(incorrectCellsArray);
+    for (let i = 0; i < incorrectCellsArray.length; i++) {
+      const row = incorrectCellsArray[i][0];
+      const collumn = incorrectCellsArray[i][1];
+      let rowNode = rowNodeList[row].childNodes;
+      let wrongCell = rowNode[collumn];
+      console.log(wrongCell);
+      wrongCell.style.backgroundColor = "red";
+      wrongCell.firstChild.style.backgroundColor = "red";
+    }
+  }
 }
 
 function createBox(sudoku, rowLimit, collumnLimit) {
@@ -103,17 +85,6 @@ function createBox(sudoku, rowLimit, collumnLimit) {
   return currentBox;
 }
 
-function testSudoku(sudoku) {
-  let rowTest = sudokuRowTest(sudoku);
-  let collumnTest = sudokuCollumnTest(sudoku);
-  let boxTest = sudokuBoxTest(sudoku);
-  let isSudokuCorrect = rowTest && collumnTest && boxTest;
-  // console.log(isSudokuCorrect);
-  return isSudokuCorrect;
-}
-
-testSudoku(sudoku1);
-//
 function getSudoku() {
   let currentSudoku = [];
   let ListofRows = document.querySelectorAll(".row");
@@ -168,7 +139,6 @@ function solveSudoku(sudoku) {
   // console.log(nextCell);
   //No more empty cells
   if (!nextCell) {
-    testSudoku(sudoku);
     console.log(sudoku);
     return sudoku;
   }
@@ -200,24 +170,25 @@ function nextEmptyCell(sudoku) {
   }
   return null;
 }
-function checkCurrentRowWorks(sudoku, rowIndex, value) {
+function checkCurrentRowWorks(sudoku, rowIndex, collumnIndex, value) {
   let currentRow = sudoku[rowIndex];
   let valueWorks = true;
-  currentRow.forEach((cell) => {
-    if (cell === value) {
+  currentRow.forEach((cell, index) => {
+    if (cell === value && collumnIndex !== index) {
       valueWorks = false;
     }
   });
   return valueWorks;
 }
-function checkCurrentCollumnWorks(sudoku, collumnIndex, value) {
+function checkCurrentCollumnWorks(sudoku, rowIndex, collumnIndex, value) {
   let currentCollumn = [];
+  // sudoku[rowIndex][collumnIndex] = 0;
   for (let i = 0; i < 9; i++) {
     currentCollumn.push(sudoku[i][collumnIndex]);
   }
   let valueWorks = true;
-  currentCollumn.forEach((cell) => {
-    if (cell === value) {
+  currentCollumn.forEach((cell, index) => {
+    if (cell === value && rowIndex !== index) {
       valueWorks = false;
     }
   });
@@ -227,6 +198,7 @@ function checkCurrentCollumnWorks(sudoku, collumnIndex, value) {
 function checkCurrentBoxWorks(sudoku, rowIndex, collumnIndex, value) {
   const boxRowBoundary = Math.floor(rowIndex / 3) * 3;
   const boxCollumnBoundary = Math.floor(collumnIndex / 3) * 3;
+  sudoku[rowIndex][collumnIndex] = 0;
   const currentBox = createBox(
     sudoku,
     [boxRowBoundary, boxRowBoundary + 2],
@@ -243,9 +215,8 @@ function checkCurrentBoxWorks(sudoku, rowIndex, collumnIndex, value) {
 
 function checkCellWorks(sudoku, rowIndex, collumnIndex, value) {
   let result =
-    checkCurrentRowWorks(sudoku, rowIndex, value) &&
-    checkCurrentCollumnWorks(sudoku, collumnIndex, value) &&
+    checkCurrentRowWorks(sudoku, rowIndex, collumnIndex, value) &&
+    checkCurrentCollumnWorks(sudoku, rowIndex, collumnIndex, value) &&
     checkCurrentBoxWorks(sudoku, rowIndex, collumnIndex, value);
-  // console.log(result);
   return result;
 }
