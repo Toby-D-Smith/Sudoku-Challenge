@@ -3,9 +3,11 @@ body {
   align-items: center;
   flex-direction: column;
   background-color: aliceblue;
+  /* width: 50%; */
 }
 table {
   margin: 1em auto;
+  margin-left: 10px;
 }
 .cell input {
   width: 40px;
@@ -42,4 +44,12 @@ button {
 #button-section {
   display: flex;
   order: 2;
+}
+#middle-section {
+  display: flex;
+}
+#set-difficulty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

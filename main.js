@@ -1,6 +1,4 @@
-generateSudokuGrid();
-
-const sudoku1 = [
+const sudokuExample = [
   [1, 2, 3, 4, 5, 6, 7, 8, 9],
   [4, 5, 6, 7, 8, 9, 1, 2, 3],
   [7, 8, 9, 1, 2, 3, 4, 5, 6],
@@ -26,10 +24,15 @@ function generateEmptyPuzzle() {
   return emptySudoku;
 }
 const emptySudoku = generateEmptyPuzzle();
+
+const middleSection = document.createElement("section");
+document.body.appendChild(middleSection);
+middleSection.setAttribute("id", "middle-section");
+
 function generateSudokuGrid() {
   const sudokuGrid = document.createElement("table");
   sudokuGrid.setAttribute("id", "grid");
-  document.body.appendChild(sudokuGrid);
+  middleSection.appendChild(sudokuGrid);
   for (let i = 0; i < 9; i++) {
     let newRow = document.createElement("tr");
     newRow.classList.add("row");
@@ -48,81 +51,9 @@ function generateSudokuGrid() {
     }
   }
 }
-function testSudoku(sudoku) {
-  let incorrectCells = [];
-  for (let rowIndex = 0; rowIndex < 9; rowIndex++) {
-    for (let collumnIndex = 0; collumnIndex < 9; collumnIndex++) {
-      currentCell = sudoku[rowIndex][collumnIndex];
-      let isCellCorrect = checkCellWorks(sudoku, rowIndex, collumnIndex, currentCell);
-      if (!isCellCorrect) {
-        incorrectCells.push([rowIndex, collumnIndex]);
-      }
-    }
-  }
-  showWinoOrLose(incorrectCells);
-  if (incorrectCells.length === 0) {
-    console.log("Correct!");
-    return "Correct!";
-  } else {
-    console.log(incorrectCells);
-    return incorrectCells;
-  }
-}
-function showWinoOrLose(incorrectCellsArray) {
-  document
-    .querySelectorAll(".cell")
-    .forEach((cell) => (cell.firstChild.style.backgroundColor = ""));
-  document.body.style.backgroundColor = "";
-  if (incorrectCellsArray.length === 0) {
-    document.body.style.backgroundColor = "green";
-  } else {
-    let rowNodeList = document.querySelectorAll(".row");
-    for (let i = 0; i < incorrectCellsArray.length; i++) {
-      const row = incorrectCellsArray[i][0];
-      const collumn = incorrectCellsArray[i][1];
-      let rowNode = rowNodeList[row].childNodes;
-      let wrongCell = rowNode[collumn];
-      console.log(wrongCell);
-      // wrongCell.style.backgroundColor = "red";
-      wrongCell.firstChild.style.backgroundColor = "red";
-    }
-  }
-}
-
-function createBox(sudoku, rowLimit, collumnLimit) {
-  const currentBox = [];
-  for (let rowIndex = rowLimit[0]; rowIndex <= rowLimit[1]; rowIndex++) {
-    for (let collumnIndex = collumnLimit[0]; collumnIndex <= collumnLimit[1]; collumnIndex++) {
-      currentBox.push(sudoku[rowIndex][collumnIndex]);
-    }
-  }
-  return currentBox;
-}
-
-function getSudoku() {
-  let currentSudoku = [];
-  let ListofRows = document.querySelectorAll(".row");
-  ListofRows.forEach((rowNodeList) => {
-    const cellsArray = Array.from(rowNodeList.childNodes);
-    const sudokuRow = [];
-    cellsArray.forEach((cell) =>
-      sudokuRow.push(parseInt(cell.firstChild.value ? cell.firstChild.value : 0))
-    );
-    currentSudoku.push(sudokuRow);
-  });
-  // console.log(currentSudoku);
-  return currentSudoku;
-}
-function exampleSudoku(sudoku) {
-  let ListofRows = document.querySelectorAll(".row");
-  for (let i = 0; i < 9; i++) {
-    currentSudokuRow = Array.from(ListofRows[i].childNodes);
-    currentSudokuRow.forEach(
-      (cell, index) => (cell.firstChild.value = sudoku[i][index] ? sudoku[i][index] : "")
-    );
-  }
-}
-const buttonSection = document.getElementById("button-section");
+const buttonSection = document.createElement("section");
+document.body.appendChild(buttonSection);
+buttonSection.setAttribute("id", "button-section");
 
 const testingButton = document.createElement("button");
 buttonSection.appendChild(testingButton);
@@ -137,7 +68,7 @@ buttonSection.appendChild(exampleButton);
 exampleButton.classList.add("exampleButton");
 exampleButton.innerText = "Sudoku Example";
 exampleButton.addEventListener("click", function () {
-  exampleSudoku(sudoku1);
+  exampleSudoku(sudokuExample);
 });
 
 const clearButton = document.createElement("button");
@@ -164,7 +95,93 @@ solveButton.addEventListener("click", function () {
   exampleSudoku(allSolutions[0]);
 });
 
-// solveSudoku(getSudoku());
+let chooseDifficultySection = document.createElement("section");
+middleSection.appendChild(chooseDifficultySection);
+chooseDifficultySection.setAttribute("id", "set-difficulty");
+
+const easyPuzzle = document.createElement("button");
+easyPuzzle.innerText = "Easy Puzzle";
+easyPuzzle.addEventListener("click", function () {
+  createProblems(70);
+});
+chooseDifficultySection.appendChild(easyPuzzle);
+
+const mediumPuzzle = document.createElement("button");
+mediumPuzzle.innerText = "Medium Puzzle";
+mediumPuzzle.addEventListener("click", function () {
+  createProblems(40);
+});
+chooseDifficultySection.appendChild(mediumPuzzle);
+
+const hardPuzzle = document.createElement("button");
+hardPuzzle.innerText = "Hard Puzzle";
+hardPuzzle.addEventListener("click", function () {
+  createProblems(0);
+});
+chooseDifficultySection.appendChild(hardPuzzle);
+
+function testSudoku(sudoku) {
+  let incorrectCells = [];
+  for (let rowIndex = 0; rowIndex < 9; rowIndex++) {
+    for (let collumnIndex = 0; collumnIndex < 9; collumnIndex++) {
+      currentCell = sudoku[rowIndex][collumnIndex];
+      let isCellCorrect = checkCellWorks(sudoku, rowIndex, collumnIndex, currentCell);
+      if (!isCellCorrect) {
+        incorrectCells.push([rowIndex, collumnIndex]);
+      }
+    }
+  }
+  showWinoOrLose(incorrectCells);
+  if (incorrectCells.length === 0) {
+    return "Correct!";
+  } else {
+    return incorrectCells;
+  }
+}
+function showWinoOrLose(incorrectCellsArray) {
+  document
+    .querySelectorAll(".cell")
+    .forEach((cell) => (cell.firstChild.style.backgroundColor = ""));
+  document.body.style.backgroundColor = "";
+  if (incorrectCellsArray.length === 0) {
+    document.body.style.backgroundColor = "green";
+  } else {
+    let rowNodeList = document.querySelectorAll(".row");
+    for (let i = 0; i < incorrectCellsArray.length; i++) {
+      const row = incorrectCellsArray[i][0];
+      const collumn = incorrectCellsArray[i][1];
+      let rowNode = rowNodeList[row].childNodes;
+      let wrongCell = rowNode[collumn];
+      // wrongCell.style.backgroundColor = "red";
+      wrongCell.firstChild.style.backgroundColor = "red";
+    }
+  }
+}
+
+function getSudoku() {
+  let currentSudoku = [];
+  let ListofRows = document.querySelectorAll(".row");
+  ListofRows.forEach((rowNodeList) => {
+    const cellsArray = Array.from(rowNodeList.childNodes);
+    const sudokuRow = [];
+    cellsArray.forEach((cell) =>
+      sudokuRow.push(parseInt(cell.firstChild.value ? cell.firstChild.value : 0))
+    );
+    currentSudoku.push(sudokuRow);
+  });
+  // console.log(currentSudoku);
+  return currentSudoku;
+}
+function exampleSudoku(sudoku) {
+  let ListofRows = document.querySelectorAll(".row");
+  for (let i = 0; i < 9; i++) {
+    currentSudokuRow = Array.from(ListofRows[i].childNodes);
+    currentSudokuRow.forEach((cell, index) => {
+      cell.firstChild.value = sudoku[i][index] ? sudoku[i][index] : "";
+      cell.firstChild.style.backgroundColor = "";
+    });
+  }
+}
 
 function nextEmptyCell(sudoku) {
   for (rowIndex = 0; rowIndex < 9; rowIndex++) {
@@ -218,6 +235,15 @@ function checkCurrentBoxWorks(sudoku, rowIndex, collumnIndex, value) {
   });
   return valueWorks;
 }
+function createBox(sudoku, rowLimit, collumnLimit) {
+  const currentBox = [];
+  for (let rowIndex = rowLimit[0]; rowIndex <= rowLimit[1]; rowIndex++) {
+    for (let collumnIndex = collumnLimit[0]; collumnIndex <= collumnLimit[1]; collumnIndex++) {
+      currentBox.push(sudoku[rowIndex][collumnIndex]);
+    }
+  }
+  return currentBox;
+}
 
 function checkCellWorks(sudoku, rowIndex, collumnIndex, value) {
   let result =
@@ -238,6 +264,7 @@ function checkSudokuTheSame(sudoku1, sudoku2 = emptySudoku) {
   }
   return areTheSame;
 }
+
 function findAllSolutions(sudoku) {
   const solutionsArray = [];
 
@@ -334,3 +361,4 @@ function mapToNewSudoku(sudoku) {
   }
   return newSudoku;
 }
+generateSudokuGrid();
