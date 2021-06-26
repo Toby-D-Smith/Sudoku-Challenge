@@ -11,19 +11,21 @@ const sudoku1 = [
   [6, 7, 8, 9, 1, 2, 3, 4, 5],
   [9, 1, 2, 3, 4, 5, 6, 7, 8],
 ];
-
-const emptySudoku = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
+function generateEmptyPuzzle() {
+  const emptySudoku = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+  return emptySudoku;
+}
+const emptySudoku = generateEmptyPuzzle();
 function generateSudokuGrid() {
   const sudokuGrid = document.createElement("table");
   sudokuGrid.setAttribute("id", "grid");
@@ -155,10 +157,11 @@ solveButton.classList.add("solveButton");
 solveButton.innerText = "Solve Sudoku";
 solveButton.addEventListener("click", function () {
   const mySudoku = getSudoku();
-  const solvedSudoku = findAllSolutions(getSudoku());
-  if (checkSudokuTheSame(mySudoku, solvedSudoku)) {
+  const allSolutions = findAllSolutions(getSudoku());
+  if (allSolutions.length === 0) {
     alert("No solution");
   }
+  exampleSudoku(allSolutions[0]);
 });
 
 // solveSudoku(getSudoku());
@@ -253,20 +256,12 @@ function findAllSolutions(sudoku) {
 
       //If a new Solution, add it to the array
       if (newSolution) {
-        let newSudoku = [[], [], [], [], [], [], [], [], []];
-        for (let i = 0; i < 9; i++) {
-          for (let j = 0; j < 9; j++) {
-            newSudoku[i][j] = sudoku[i][j];
-          }
-        }
-        console.log(newSudoku);
-        exampleSudoku(newSudoku);
+        let newSudoku = mapToNewSudoku(sudoku);
         solutionsArray.push(newSudoku);
       }
 
       //Carry on until we have 2 solutions
       if (solutionsArray.length < 2) {
-        console.log(sudoku);
         return false;
       }
       return sudoku;
@@ -279,6 +274,8 @@ function findAllSolutions(sudoku) {
       if (checkCellWorks(sudoku, rowIndex, collumnIndex, cellValue)) {
         sudoku[rowIndex][collumnIndex] = cellValue;
         let solvedReturn = solveSudoku(sudoku);
+
+        //Carry on if we only have 1 solution
         if (solvedReturn === false) {
           sudoku[rowIndex][collumnIndex] = 0;
         }
@@ -290,9 +287,50 @@ function findAllSolutions(sudoku) {
     }
     return sudoku;
   }
-  // let isSolutionUnique = true;
   solveSudoku(sudoku);
   // exampleSudoku(solutionsArray[0]);
-  // console.log(solutionsArray);
   return solutionsArray;
+}
+
+function createProblems(minimumDigits) {
+  let sudokuPuzzle = generateEmptyPuzzle();
+  let numberOfDigits = 0;
+  const randomNumberBetween1and9 = () => Math.ceil(Math.random() * 9);
+  let uniqueSolution = false;
+
+  while (numberOfDigits < minimumDigits || uniqueSolution === false) {
+    let randomRowIndex = randomNumberBetween1and9() - 1;
+    let randomCollumnIndex = randomNumberBetween1and9() - 1;
+    let randomCellValue = randomNumberBetween1and9();
+    //Makes sure the cell is empty
+    if (sudokuPuzzle[randomRowIndex][randomCollumnIndex] !== 0) {
+      continue;
+    }
+
+    if (checkCellWorks(sudokuPuzzle, randomRowIndex, randomCollumnIndex, randomCellValue)) {
+      let testSudoku = mapToNewSudoku(sudokuPuzzle);
+      testSudoku[randomRowIndex][randomCollumnIndex] = randomCellValue;
+      let solutions = findAllSolutions(testSudoku);
+
+      //If there are solutions, add the digit
+      if (solutions.length === 1) {
+        uniqueSolution = true;
+      }
+      if (solutions.length !== 0) {
+        numberOfDigits++;
+        sudokuPuzzle[randomRowIndex][randomCollumnIndex] = randomCellValue;
+      }
+    }
+  }
+  exampleSudoku(sudokuPuzzle);
+  return sudokuPuzzle;
+}
+function mapToNewSudoku(sudoku) {
+  let newSudoku = generateEmptyPuzzle();
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      newSudoku[i][j] = sudoku[i][j];
+    }
+  }
+  return newSudoku;
 }
