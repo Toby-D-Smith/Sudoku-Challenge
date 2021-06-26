@@ -1,7 +1,5 @@
 generateSudokuGrid();
 
-const emptySudoku = [[], [], [], [], [], [], [], [], []];
-
 const sudoku1 = [
   [1, 2, 3, 4, 5, 6, 7, 8, 9],
   [4, 5, 6, 7, 8, 9, 1, 2, 3],
@@ -12,6 +10,18 @@ const sudoku1 = [
   [3, 4, 5, 6, 7, 8, 9, 1, 2],
   [6, 7, 8, 9, 1, 2, 3, 4, 5],
   [9, 1, 2, 3, 4, 5, 6, 7, 8],
+];
+
+const emptySudoku = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
 function generateSudokuGrid() {
@@ -47,7 +57,7 @@ function testSudoku(sudoku) {
       }
     }
   }
-  showWinorLose(incorrectCells);
+  showWinoOrLose(incorrectCells);
   if (incorrectCells.length === 0) {
     console.log("Correct!");
     return "Correct!";
@@ -56,20 +66,22 @@ function testSudoku(sudoku) {
     return incorrectCells;
   }
 }
-function showWinorLose(incorrectCellsArray) {
+function showWinoOrLose(incorrectCellsArray) {
+  document
+    .querySelectorAll(".cell")
+    .forEach((cell) => (cell.firstChild.style.backgroundColor = ""));
+  document.body.style.backgroundColor = "";
   if (incorrectCellsArray.length === 0) {
     document.body.style.backgroundColor = "green";
   } else {
     let rowNodeList = document.querySelectorAll(".row");
-    // console.log(rowNodeList);
-    // console.log(incorrectCellsArray);
     for (let i = 0; i < incorrectCellsArray.length; i++) {
       const row = incorrectCellsArray[i][0];
       const collumn = incorrectCellsArray[i][1];
       let rowNode = rowNodeList[row].childNodes;
       let wrongCell = rowNode[collumn];
       console.log(wrongCell);
-      wrongCell.style.backgroundColor = "red";
+      // wrongCell.style.backgroundColor = "red";
       wrongCell.firstChild.style.backgroundColor = "red";
     }
   }
@@ -96,7 +108,7 @@ function getSudoku() {
     );
     currentSudoku.push(sudokuRow);
   });
-  console.log(currentSudoku);
+  // console.log(currentSudoku);
   return currentSudoku;
 }
 function exampleSudoku(sudoku) {
@@ -131,34 +143,25 @@ buttonSection.appendChild(clearButton);
 clearButton.classList.add("clearButton");
 clearButton.innerText = "Clear";
 clearButton.addEventListener("click", function () {
-  exampleSudoku(emptySudoku);
+  document.body.style.backgroundColor = "";
+  document.querySelectorAll(".cell").forEach((cell) => {
+    cell.firstChild.value = "";
+    cell.firstChild.style.backgroundColor = "";
+  });
+});
+const solveButton = document.createElement("button");
+buttonSection.appendChild(solveButton);
+solveButton.classList.add("solveButton");
+solveButton.innerText = "Solve Sudoku";
+solveButton.addEventListener("click", function () {
+  const mySudoku = getSudoku();
+  const solvedSudoku = findAllSolutions(getSudoku());
+  if (checkSudokuTheSame(mySudoku, solvedSudoku)) {
+    alert("No solution");
+  }
 });
 
-function solveSudoku(sudoku) {
-  let nextCell = nextEmptyCell(sudoku);
-  // console.log(nextCell);
-  //No more empty cells
-  if (!nextCell) {
-    console.log(sudoku);
-    return sudoku;
-  }
-  let rowIndex = nextCell[0];
-  let collumnIndex = nextCell[1];
-
-  // console.log(sudoku);
-  for (let cellValue = 1; cellValue <= 9; cellValue++) {
-    if (checkCellWorks(sudoku, rowIndex, collumnIndex, cellValue)) {
-      sudoku[rowIndex][collumnIndex] = cellValue;
-      sudoku = solveSudoku(sudoku);
-    }
-  }
-  if (nextEmptyCell(sudoku)) {
-    sudoku[rowIndex][collumnIndex] = 0;
-  }
-  exampleSudoku(sudoku);
-  return sudoku;
-}
-solveSudoku(getSudoku());
+// solveSudoku(getSudoku());
 
 function nextEmptyCell(sudoku) {
   for (rowIndex = 0; rowIndex < 9; rowIndex++) {
@@ -219,4 +222,77 @@ function checkCellWorks(sudoku, rowIndex, collumnIndex, value) {
     checkCurrentCollumnWorks(sudoku, rowIndex, collumnIndex, value) &&
     checkCurrentBoxWorks(sudoku, rowIndex, collumnIndex, value);
   return result;
+}
+
+function checkSudokuTheSame(sudoku1, sudoku2 = emptySudoku) {
+  let areTheSame = true;
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      if (sudoku1[i][j] != sudoku2[i][j]) {
+        areTheSame = false;
+      }
+    }
+  }
+  return areTheSame;
+}
+function findAllSolutions(sudoku) {
+  const solutionsArray = [];
+
+  function solveSudoku(sudoku) {
+    let nextCell = nextEmptyCell(sudoku);
+
+    //Completed Sudoku
+    if (!nextCell) {
+      //Checks the solution is a new one
+      let newSolution = true;
+      solutionsArray.forEach((solutions) => {
+        if (checkSudokuTheSame(sudoku, solutions)) {
+          newSolution = false;
+        }
+      });
+
+      //If a new Solution, add it to the array
+      if (newSolution) {
+        let newSudoku = [[], [], [], [], [], [], [], [], []];
+        for (let i = 0; i < 9; i++) {
+          for (let j = 0; j < 9; j++) {
+            newSudoku[i][j] = sudoku[i][j];
+          }
+        }
+        console.log(newSudoku);
+        exampleSudoku(newSudoku);
+        solutionsArray.push(newSudoku);
+      }
+
+      //Carry on until we have 2 solutions
+      if (solutionsArray.length < 2) {
+        console.log(sudoku);
+        return false;
+      }
+      return sudoku;
+    }
+    let rowIndex = nextCell[0];
+    let collumnIndex = nextCell[1];
+
+    //If the cell value works, got to the next cell
+    for (let cellValue = 1; cellValue <= 9; cellValue++) {
+      if (checkCellWorks(sudoku, rowIndex, collumnIndex, cellValue)) {
+        sudoku[rowIndex][collumnIndex] = cellValue;
+        let solvedReturn = solveSudoku(sudoku);
+        if (solvedReturn === false) {
+          sudoku[rowIndex][collumnIndex] = 0;
+        }
+      }
+    }
+    //When going back to previous cells, ensuring they're set to 0
+    if (nextEmptyCell(sudoku)) {
+      sudoku[rowIndex][collumnIndex] = 0;
+    }
+    return sudoku;
+  }
+  // let isSolutionUnique = true;
+  solveSudoku(sudoku);
+  // exampleSudoku(solutionsArray[0]);
+  // console.log(solutionsArray);
+  return solutionsArray;
 }

@@ -2,6 +2,7 @@ body {
   display: flex;
   align-items: center;
   flex-direction: column;
+  background-color: aliceblue;
 }
 table {
   margin: 1em auto;
@@ -12,6 +13,7 @@ table {
 
   font-size: 30px;
   text-align: center;
+  background-color: white;
 }
 td {
   border: 1px solid;
