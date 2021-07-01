@@ -266,8 +266,12 @@ function checkSudokuTheSame(sudoku1, sudoku2 = emptySudoku) {
 }
 
 function findAllSolutions(sudoku) {
+  const endingTime = Date.now() + 2000;
   const solutionsArray = [];
   function solveSudoku(sudoku) {
+    if (Date.now() > endingTime) {
+      return solutionsArray;
+    }
     let nextCell = nextEmptyCell(sudoku);
     //Completed Sudoku
     if (!nextCell) {
