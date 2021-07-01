@@ -172,7 +172,7 @@ function getSudoku() {
   // console.log(currentSudoku);
   return currentSudoku;
 }
-function exampleSudoku(sudoku) {
+function exampleSudoku(sudoku = emptySudoku) {
   let ListofRows = document.querySelectorAll(".row");
   for (let i = 0; i < 9; i++) {
     currentSudokuRow = Array.from(ListofRows[i].childNodes);
@@ -267,10 +267,8 @@ function checkSudokuTheSame(sudoku1, sudoku2 = emptySudoku) {
 
 function findAllSolutions(sudoku) {
   const solutionsArray = [];
-
   function solveSudoku(sudoku) {
     let nextCell = nextEmptyCell(sudoku);
-
     //Completed Sudoku
     if (!nextCell) {
       //Checks the solution is a new one
